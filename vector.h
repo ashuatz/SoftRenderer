@@ -50,13 +50,42 @@ public:
 		return *this;
 	}
 
-	const vector2 operator+(const vector2& rhv)
+	const vector2 operator+(const vector2& rhv) const
 	{
 		vector2 temp{ this->x,this->y };
 		temp += rhv;
 		return temp;
 	}
 
+	vector2& operator*=(const float& value)
+	{
+		this->x *= value;
+		this->y *= value;
+
+		return *this;
+	}
+
+	vector2& operator*=(const vector2& rhv)
+	{
+		this->x *= rhv.x;
+		this->y *= rhv.y;
+
+		return *this;
+	}
+
+	const vector2 operator*(const float& rhv) const
+	{
+		vector2 temp{ this->x,this->y };
+		temp *= rhv;
+		return temp;
+	}
+
+	const vector2 operator*(const vector2& rhv) const
+	{
+		vector2 temp{ this->x,this->y };
+		temp *= rhv;
+		return temp;
+	}
 
 	static float Dot(const vector2& lhv, const vector2& rhv)
 	{

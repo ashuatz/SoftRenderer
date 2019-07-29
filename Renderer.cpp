@@ -9,6 +9,9 @@ bool IsInRange(int x, int y);
 void PutPixel(int x, int y);
 void PutPixel(int x, int y, Vector3 color);
 
+void PutLine(const vector2& start, const vector2& dir, float length);
+void PutLine(const vector2& start, const vector2& end);
+
 bool IsInRange(int x, int y)
 {
 	return (abs(x) < (g_nClientWidth / 2)) && (abs(y) < (g_nClientHeight / 2));
@@ -42,6 +45,23 @@ void DrawTriangle(const vertex& v1, const vertex& v2, const vertex& v3)
 				PutPixel(p.x, p.y, color * 255);
 			}
 		}
+	}
+}
+
+void DrawTriangle2(const vertex& v1, const vertex& v2, const vertex& v3)
+{
+	Vector2 rdir = v2.pos - v1.pos;
+	Vector2 mdir = v3.pos - v1.pos;
+
+	float rLen = rdir.GetMagnitude();
+	float mLen = mdir.GetMagnitude();
+	rdir.Normalize();
+	mdir.Normalize();
+
+	for (int m = 0; m <= mLen; ++m)
+	{
+		vector2 op = (v1.pos + (mdir * m));
+		PutLine(op, rdir, (1 - m / mLen) * rLen);
 	}
 }
 
@@ -99,6 +119,7 @@ void UpdateFrame(void)
 	Vertex V4(vector2(70, -80), vector3(0, 1, 0));
 
 	DrawTriangle(V1, V2, V3);
+	DrawTriangle2(V1, V2, V3);
 	//DrawTriangle(V1, V3, V4);
 
 	// Buffer Swap 
