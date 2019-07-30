@@ -1,6 +1,6 @@
 #pragma once
 
-typedef struct vector2
+struct vector2
 {
 public:
 	float x;
@@ -16,15 +16,28 @@ public:
 		return this;
 	}
 
+	vector2* PixelNormalize()
+	{
+		*this *= 1 / GetPixelAxisMagnitude();
+		return this;
+	}
+
 	vector2 Normalized()
 	{
 		vector2 temp{ this->x,this->y };
 		return *temp.Normalize();
 	}
 
+
 	float GetMagnitude() const
 	{
-		return sqrt(this->x * this->x + this->y * this->y);
+		float value = sqrt(this->x * this->x + this->y * this->y);
+		return value;
+	}
+
+	const float GetPixelAxisMagnitude()
+	{
+		return Max(Abs(this->x), Abs(this->y));
 	}
 
 	vector2& operator-=(const vector2& rhv)
@@ -96,9 +109,19 @@ public:
 	{
 		return lhv.x * rhv.y - lhv.y * rhv.x;
 	}
-}Vector2;
 
-typedef struct vector3
+	static const float Abs(const float& value)
+	{
+		return value > 0 ? value : -value;
+	}
+
+	static const float Max(const float& a, const float& b)
+	{
+		return a > b ? a : b;
+	}
+};
+
+struct vector3
 {
 public:
 	float x;
@@ -163,4 +186,5 @@ public:
 		temp *= value;
 		return temp;
 	}
-}Vector3;
+};
+

@@ -7,8 +7,9 @@
 
 bool IsInRange(int x, int y);
 void PutPixel(int x, int y);
-void PutPixel(int x, int y, Vector3 color);
+void PutPixel(int x, int y, vector3 color);
 
+void PutLine(const vector2& start, const vector2& dir, float length);
 void PutLine(const vector2& start, const vector2& dir, float length);
 void PutLine(const vector2& start, const vector2& end);
 
@@ -17,23 +18,29 @@ bool IsInRange(int x, int y)
 	return (abs(x) < (g_nClientWidth / 2)) && (abs(y) < (g_nClientHeight / 2));
 }
 
-void DrawTriangle(const vertex& v1, const vertex& v2, const vertex& v3)
+void CheckTriangle(const vertex& v1, const vertex& v2, const vertex& v3,bool isInner = false)
 {
 	float Xstart = min(min(v1.pos.x, v2.pos.x), v3.pos.x);
 	float Ystart = min(min(v1.pos.y, v2.pos.y), v3.pos.y);
 	float Xend = max(max(v1.pos.x, v2.pos.x), v3.pos.x);
 	float Yend = max(max(v1.pos.y, v2.pos.y), v3.pos.y);
 
-	Vector2 start(Xstart, Ystart);
-	Vector2 end(Xend, Yend);
+	vector2 start(Xstart, Ystart);
+	vector2 end(Xend, Yend);
 
 	for (int y = 0; y < end.y - start.y; ++y)
 	{
 		for (int x = 0; x < end.x - start.x; ++x)
 		{
-			vector2 p = (start + Vector2(x, y));
+			vector2 p = (start + vector2(x, y));
 
-			if (vector2::Cross((v1.pos - v2.pos), p - v2.pos) >= 0 && vector2::Cross((v2.pos - v3.pos), p - v3.pos) >= 0 && vector2::Cross((v3.pos - v1.pos), p - v1.pos) >= 0)
+			bool pass = false;
+			if (isInner)
+				pass = vector2::Cross((v1.pos - v2.pos), p - v2.pos) > 0 && vector2::Cross((v2.pos - v3.pos), p - v3.pos) > 0 && vector2::Cross((v3.pos - v1.pos), p - v1.pos) > 0;
+			else
+				pass = vector2::Cross((v1.pos - v2.pos), p - v2.pos) >= 0 && vector2::Cross((v2.pos - v3.pos), p - v3.pos) >= 0 && vector2::Cross((v3.pos - v1.pos), p - v1.pos) >= 0;
+
+			if (pass)
 			{
 				//getColor;
 				auto totalLength = (v1.pos - p).GetMagnitude() + (v2.pos - p).GetMagnitude() + (v3.pos - p).GetMagnitude();
@@ -48,10 +55,10 @@ void DrawTriangle(const vertex& v1, const vertex& v2, const vertex& v3)
 	}
 }
 
-void DrawTriangle2(const vertex& v1, const vertex& v2, const vertex& v3)
+void DrawTriangle(const vertex& v1, const vertex& v2, const vertex& v3)
 {
-	Vector2 rdir = v2.pos - v1.pos;
-	Vector2 mdir = v3.pos - v1.pos;
+	vector2 rdir = v2.pos - v1.pos;
+	vector2 mdir = v3.pos - v1.pos;
 
 	float rLen = rdir.GetMagnitude();
 	float mLen = mdir.GetMagnitude();
@@ -65,17 +72,34 @@ void DrawTriangle2(const vertex& v1, const vertex& v2, const vertex& v3)
 	}
 }
 
+void DrawTrianglePixel(const vertex& v1, const vertex& v2, const vertex& v3)
+{
+	vector2 rdir = v2.pos - v1.pos;
+	vector2 mdir = v3.pos - v1.pos;
+
+	float rLen = rdir.GetMagnitude();
+	float mLen = round(mdir.GetPixelAxisMagnitude());
+	rdir.Normalize();// *= 1 / rLen;
+	mdir.PixelNormalize();
+
+	for (int m = 0; m <= mLen; ++m)
+	{
+		vector2 op = (v1.pos + (mdir * m));
+		PutLine(op, rdir, ceil((1 - m / mLen) * rLen));
+	}
+}
+
 void PutLine(const vector2& start, const vector2& dir, float length)
 {
 	for (int i = 0; i < length; ++i)
 	{
-		PutPixel(start.x + i * dir.x, start.y + i * dir.y);
+		PutPixel(start.x + round(i *  dir.x), start.y + ceil(i * dir.y));
 	}
 }
 
 void PutLine(const vector2& start, const vector2& end)
 {
-	vector2 dir = end- start;
+	vector2 dir = end - start;
 	int magnitude = dir.GetMagnitude();
 	dir.Normalize();
 
@@ -92,7 +116,7 @@ void PutPixel(int x, int y)
 	*(dest + offset) = g_CurrentColor;
 }
 
-void PutPixel(int x, int y, Vector3 color)
+void PutPixel(int x, int y, vector3 color)
 {
 	if (!IsInRange(x, y))
 		return;
@@ -113,13 +137,18 @@ void UpdateFrame(void)
 	SetColor(255, 0, 0);
 	//PutPixel(1,1);
 
-	Vertex V1(vector2(-100, -100), vector3(1, 0, 0));
-	Vertex V2(vector2(-70, 80), vector3(0, 1, 0));
-	Vertex V3(vector2(100, 100), vector3(0, 0, 1));
-	Vertex V4(vector2(70, -80), vector3(0, 1, 0));
+	vertex V1(vector2(-50,-50), vector3(1, 0, 0));
+	vertex V2(vector2(0, 50), vector3(0, 1, 0));
+	vertex V3(vector2(50, -50), vector3(0, 0, 1));
+	vertex V4(vector2(70, -80), vector3(0, 1, 0));
 
-	DrawTriangle(V1, V2, V3);
-	DrawTriangle2(V1, V2, V3);
+	PutPixel(0, 50);
+	PutPixel(-50, -50);
+	PutPixel(50, -50);
+
+	SetColor(0, 0, 0);
+	CheckTriangle(V1, V2, V3,false);
+	DrawTrianglePixel(V1, V2, V3);
 	//DrawTriangle(V1, V3, V4);
 
 	// Buffer Swap 
