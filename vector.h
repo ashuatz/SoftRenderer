@@ -6,7 +6,10 @@ public:
 	float x;
 	float y;
 
+
+	vector2() : x(0), y(0) {}
 	vector2(float x, float y) : x(x), y(y) {}
+	vector2(const vector2& rhs) : x(rhs.x), y(rhs.y) {}
 
 	vector2* Normalize()
 	{
@@ -16,28 +19,16 @@ public:
 		return this;
 	}
 
-	vector2* PixelNormalize()
-	{
-		*this *= 1 / GetPixelAxisMagnitude();
-		return this;
-	}
-
 	vector2 Normalized()
 	{
 		vector2 temp{ this->x,this->y };
 		return *temp.Normalize();
 	}
 
-
 	float GetMagnitude() const
 	{
 		float value = sqrt(this->x * this->x + this->y * this->y);
 		return value;
-	}
-
-	const float GetPixelAxisMagnitude()
-	{
-		return Max(Abs(this->x), Abs(this->y));
 	}
 
 	vector2& operator-=(const vector2& rhv)
@@ -119,7 +110,25 @@ public:
 	{
 		return a > b ? a : b;
 	}
+
+	virtual ~vector2() 
+	{
+
+	}
 };
+
+struct vector2Int : public vector2
+{
+	int x;
+	int y;
+
+	vector2Int(int x,int y) : x(x), y(y) {}
+	vector2Int(const vector2& rhs) : x(rhs.x), y(rhs.y) {}
+	vector2Int(const vector2Int& rhs) : x(rhs.x), y(rhs.y) {}
+
+	virtual ~vector2Int() {}
+};
+
 
 struct vector3
 {
@@ -143,6 +152,15 @@ public:
 	{
 		vector3 temp{ this->x,this->y,this->z };
 		return *temp.Normalize();
+	}
+
+	vector3& operator+=(const vector3& rhv)
+	{
+		this->x += rhv.x;
+		this->y += rhv.y;
+		this->z += rhv.z;
+
+		return *this;
 	}
 
 	vector3& operator-=(const vector3& rhv)
@@ -172,6 +190,12 @@ public:
 		return *this;
 	}
 
+	const vector3 operator+(const vector3& rhv) const
+	{
+		vector3 temp{ this->x,this->y,this->z };
+		temp += rhv;
+		return temp;
+	}
 
 	const vector3 operator-(const vector3& rhv) const
 	{
@@ -185,6 +209,11 @@ public:
 		vector3 temp{ this->x,this->y,this->z };
 		temp *= value;
 		return temp;
+	}
+
+	static COLORREF ToColor(const vector3& vector)
+	{
+		return ((COLORREF)(((BYTE)(vector.z) | ((WORD)((BYTE)(vector.y)) << 8)) | (((DWORD)(BYTE)(vector.x)) << 16)));
 	}
 };
 

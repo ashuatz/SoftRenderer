@@ -45,6 +45,18 @@
     <ClInclude Include="SoftRenderer.h">
       <Filter>App</Filter>
     </ClInclude>
+    <ClInclude Include="vector.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="vertex.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="customMath.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="struct.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -58,6 +70,9 @@
     </ClCompile>
     <ClCompile Include="SoftRenderer.cpp">
       <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="struct.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
