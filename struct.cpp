@@ -125,22 +125,27 @@ void Triangle::DrawFlatSideTriangle(const vertex& v1, const vertex& v2, const ve
 	}
 }
 
-vector3 Triangle::GetBarycentricCoordinate(const vector2& p)
+vector3 Triangle::GetBarycentricCoordinate(const vector2Int& p)
 {
 	vector2 a(m_v1.pos);
 	vector2 b(m_v2.pos);
 	vector2 c(m_v3.pos);
 	vector3 l(0, 0, 0);
 
-	float den = 1.f / ((b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y));
-	l.x = ((b.y - c.y) * (p.x - c.x) + (c.x - b.x) * (p.y - c.y)) * den;
-	l.y = ((c.y - a.y) * (p.x - c.x) + (a.x - c.x) * (p.y - c.y)) * den;
+	if (!isDenInitialized)
+	{
+		m_Den = 1.f / ((b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y));
+		isDenInitialized = true;
+	}
+
+	l.x = ((b.y - c.y) * (p.x - c.x) + (c.x - b.x) * (p.y - c.y)) * m_Den;
+	l.y = ((c.y - a.y) * (p.x - c.x) + (a.x - c.x) * (p.y - c.y)) * m_Den;
 	l.z = 1 - l.x - l.y;
 
 	return l;
 }
 
-vector3 Triangle::GetColorByBarycentricCoordinate(const vector2& p)
+vector3 Triangle::GetColorByBarycentricCoordinate(const vector2Int& p)
 {
 	vector3 lambda = GetBarycentricCoordinate(p);
 	vector3 color(0, 0, 0);
