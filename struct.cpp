@@ -28,7 +28,12 @@ void Triangle::DrawLine(const vector2Int& start, const vector2Int& end)
 	int e = 2 * dy - dx;
 	for (int i = 0; i <= dx; ++i)
 	{
-		PutPixel(current.x, current.y, GetColorByBarycentricCoordinate(current));
+		vector3 lambda = GetBarycentricCoordinate(current);
+		if (isInside(lambda))
+		{
+			PutPixel(current.x, current.y, GetColorByBarycentricCoordinate(lambda));
+		}
+
 		if (e >= 0)
 		{
 			if (isChanged)
@@ -127,31 +132,40 @@ void Triangle::DrawFlatSideTriangle(const vertex& v1, const vertex& v2, const ve
 
 vector3 Triangle::GetBarycentricCoordinate(const vector2Int& p)
 {
-	vector2 a(m_v1.pos);
-	vector2 b(m_v2.pos);
-	vector2 c(m_v3.pos);
+	vector2 a(V1.pos);
+	vector2 b(V2.pos);
+	vector2 c(V3.pos);
+
+	vector2 u = b - a;
+	vector2 v = c - a;
+	vector2 w = p - a;
+
 	vector3 l(0, 0, 0);
 
 	if (!isDenInitialized)
 	{
-		m_Den = 1.f / ((b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y));
+		BarycentricDenominator = 1.f / ((b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y));
 		isDenInitialized = true;
 	}
 
-	l.x = ((b.y - c.y) * (p.x - c.x) + (c.x - b.x) * (p.y - c.y)) * m_Den;
-	l.y = ((c.y - a.y) * (p.x - c.x) + (a.x - c.x) * (p.y - c.y)) * m_Den;
+	l.x = ((b.y - c.y) * (p.x - c.x) + (c.x - b.x) * (p.y - c.y)) * BarycentricDenominator;
+	l.y = ((c.y - a.y) * (p.x - c.x) + (a.x - c.x) * (p.y - c.y)) * BarycentricDenominator;
 	l.z = 1 - l.x - l.y;
 
 	return l;
 }
 
-vector3 Triangle::GetColorByBarycentricCoordinate(const vector2Int& p)
+bool Triangle::isInside(const vector3 & lambda) const
 {
-	vector3 lambda = GetBarycentricCoordinate(p);
+	return lambda.x >= 0 && lambda.y >= 0 && (lambda.z >= 0 && lambda.z <= 1);
+}
+
+vector3 Triangle::GetColorByBarycentricCoordinate(const vector3& lambda)
+{
 	vector3 color(0, 0, 0);
-	color += m_v1.color * lambda.x;
-	color += m_v2.color * lambda.y;
-	color += m_v3.color * lambda.z;
+	color += V1.color * lambda.x;
+	color += V2.color * lambda.y;
+	color += V3.color * lambda.z;
 	return color * 255;
 }
 
@@ -159,34 +173,34 @@ vector3 Triangle::GetColorByBarycentricCoordinate(const vector2Int& p)
 void Triangle::RenderTriangle()
 {
 	//sort by y axis
-	vertex vts[3]{ m_v1,m_v2,m_v3 };
+	vertex vts[3]{ V1,V2,V3 };
 	std::sort(vts, vts + 3, [&](const vertex& a, const vertex& b) {return a.pos.y > b.pos.y; });
 
-	m_v1 = vts[0];
-	m_v2 = vts[1];
-	m_v3 = vts[2];
+	V1 = vts[0];
+	V2 = vts[1];
+	V3 = vts[2];
 
-	if (m_v1.pos.y == m_v3.pos.y)
+	if (V1.pos.y == V3.pos.y)
 	{
-		DrawFlatSideTriangle(m_v1, m_v2, m_v3);
+		DrawFlatSideTriangle(V1, V2, V3);
 	}
-	else if (m_v1.pos.y == m_v2.pos.y)
+	else if (V1.pos.y == V2.pos.y)
 	{
-		DrawFlatSideTriangle(m_v3, m_v1, m_v2);
+		DrawFlatSideTriangle(V3, V1, V2);
 	}
 	else
 	{
-		float x = m_v1.pos.x - (m_v1.pos.y - m_v2.pos.y) * (m_v1.pos.x - m_v3.pos.x) / (m_v1.pos.y - m_v3.pos.y);
-		vertex v4(vector2(round(x), m_v2.pos.y), vector3(1, 1, 1));
-		DrawFlatSideTriangle(m_v1, m_v2, v4); // up-side
-		DrawFlatSideTriangle(m_v3, m_v2, v4); // down-side
+		float x = V1.pos.x - (V1.pos.y - V2.pos.y) * (V1.pos.x - V3.pos.x) / (V1.pos.y - V3.pos.y);
+		vertex v4(vector2(round(x), V2.pos.y), vector3(1, 1, 1));
+		DrawFlatSideTriangle(V1, V2, v4); // up-side
+		DrawFlatSideTriangle(V3, V2, v4); // down-side
 
 		PutPixel(v4.pos.x, v4.pos.y, v4.color * 0);
 	}
 
-	PutPixel(m_v1.pos.x, m_v1.pos.y, m_v1.color * 0);
-	PutPixel(m_v2.pos.x, m_v2.pos.y, m_v2.color * 0);
-	PutPixel(m_v3.pos.x, m_v3.pos.y, m_v3.color * 0);
+	PutPixel(V1.pos.x, V1.pos.y, V1.color * 0);
+	PutPixel(V2.pos.x, V2.pos.y, V2.color * 0);
+	PutPixel(V3.pos.x, V3.pos.y, V3.color * 0);
 }
 
 

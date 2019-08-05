@@ -57,6 +57,9 @@
     <ClInclude Include="struct.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Bmp.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -72,6 +75,9 @@
       <Filter>App</Filter>
     </ClCompile>
     <ClCompile Include="struct.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Bmp.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

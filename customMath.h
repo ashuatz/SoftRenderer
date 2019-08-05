@@ -21,3 +21,8 @@ static bool IsInRange(int x, int y)
 {
 	return (abs(x) < (g_nClientWidth / 2)) && (abs(y) < (g_nClientHeight / 2));
 }
+
+static float lerp(const float& a, const float& b, const float& f)
+{
+	return a + f * (b - a);
+}

@@ -19,7 +19,7 @@ public:
 		return this;
 	}
 
-	vector2 Normalized()
+	vector2 Normalized() const
 	{
 		vector2 temp{ this->x,this->y };
 		return *temp.Normalize();

@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Bmp.h" />
     <ClInclude Include="customMath.h" />
     <ClInclude Include="GDIHelper.h" />
     <ClInclude Include="Renderer.h" />
@@ -154,6 +155,7 @@
     <ClInclude Include="vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bmp.cpp" />
     <ClCompile Include="GDIHelper.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SoftRenderer.cpp" />
