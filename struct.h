@@ -17,9 +17,8 @@ private:
 
 	void DrawLine(const vector2Int& start, const vector2Int& end);
 	void DrawFlatSideTriangle(const vertex& v1, const vertex& v2, const vertex& v3);
-	bool isInside(const vector3& lambda) const;
 	vector3 GetBarycentricCoordinate(const vector2Int& p);
-	vector3 GetColorByBarycentricCoordinate(const vector3& lambda);
+	vector3 GetColorByBarycentricCoordinate(const vector2Int& p);
 
 	void PutPixel(int x, int y, vector3 color);
 };

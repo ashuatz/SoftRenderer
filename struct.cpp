@@ -28,12 +28,7 @@ void Triangle::DrawLine(const vector2Int& start, const vector2Int& end)
 	int e = 2 * dy - dx;
 	for (int i = 0; i <= dx; ++i)
 	{
-		vector3 lambda = GetBarycentricCoordinate(current);
-		if (isInside(lambda))
-		{
-			PutPixel(current.x, current.y, GetColorByBarycentricCoordinate(lambda));
-		}
-
+		PutPixel(current.x, current.y, GetColorByBarycentricCoordinate(current));
 		if (e >= 0)
 		{
 			if (isChanged)
@@ -132,36 +127,24 @@ void Triangle::DrawFlatSideTriangle(const vertex& v1, const vertex& v2, const ve
 
 vector3 Triangle::GetBarycentricCoordinate(const vector2Int& p)
 {
-	vector2 a(V1.pos);
-	vector2 b(V2.pos);
-	vector2 c(V3.pos);
-
-	vector2 u = b - a;
-	vector2 v = c - a;
-	vector2 w = p - a;
-
 	vector3 l(0, 0, 0);
 
 	if (!isDenInitialized)
 	{
-		BarycentricDenominator = 1.f / ((b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y));
+		BarycentricDenominator = 1.f / ((V2.pos.y - V3.pos.y) * (V1.pos.x - V3.pos.x) + (V3.pos.x - V2.pos.x) * (V1.pos.y - V3.pos.y));
 		isDenInitialized = true;
 	}
 
-	l.x = ((b.y - c.y) * (p.x - c.x) + (c.x - b.x) * (p.y - c.y)) * BarycentricDenominator;
-	l.y = ((c.y - a.y) * (p.x - c.x) + (a.x - c.x) * (p.y - c.y)) * BarycentricDenominator;
+	l.x = clamp(0.f, 1.f, ((V2.pos.y - V3.pos.y) * (p.x - V3.pos.x) + (V3.pos.x - V2.pos.x) * (p.y - V3.pos.y)) * BarycentricDenominator);
+	l.y = clamp(0.f, 1.f, ((V3.pos.y - V1.pos.y) * (p.x - V3.pos.x) + (V1.pos.x - V3.pos.x) * (p.y - V3.pos.y)) * BarycentricDenominator);
 	l.z = 1 - l.x - l.y;
 
 	return l;
 }
 
-bool Triangle::isInside(const vector3 & lambda) const
+vector3 Triangle::GetColorByBarycentricCoordinate(const vector2Int& p)
 {
-	return lambda.x >= 0 && lambda.y >= 0 && (lambda.z >= 0 && lambda.z <= 1);
-}
-
-vector3 Triangle::GetColorByBarycentricCoordinate(const vector3& lambda)
-{
+	vector3 lambda = GetBarycentricCoordinate(p);
 	vector3 color(0, 0, 0);
 	color += V1.color * lambda.x;
 	color += V2.color * lambda.y;

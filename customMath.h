@@ -26,3 +26,8 @@ static float lerp(const float& a, const float& b, const float& f)
 {
 	return a + f * (b - a);
 }
+
+static float clamp(const float& min, const float& max, const float& value)
+{
+	return value < min ? min : (value > max ? max : value);
+}
