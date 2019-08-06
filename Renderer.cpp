@@ -6,6 +6,7 @@
 #include "vertex.h"
 #include "customMath.h"
 #include "struct.h"
+#include "Bmp.h"
 
 #include <random>
 #include <ctime>
@@ -17,6 +18,7 @@ void RenderRandomTriangle();
 
 void UpdateFrame(void)
 {
+
 	// Buffer Clear
 	SetColor(32, 128, 255);
 	Clear();
@@ -32,9 +34,8 @@ void UpdateFrame(void)
 void RenderRandomTriangle()
 {
 	static bool isWaiting = false;
-	static vertex V1(vector2(0, 0), vector3(0, 0, 0));
-	static vertex V2(vector2(0, 0), vector3(0, 0, 0));
-	static vertex V3(vector2(0, 0), vector3(0, 0, 0));
+
+	static vertex V[4]{ {vector2(-50, 50), vector3(1, 0, 0)},{vector2(50, 50), vector3(0, 1, 0)},{vector2(-50, -50), vector3(0, 0, 1)},{vector2(50, -50), vector3(1, 1, 1)} };
 
 	if (!isWaiting)
 	{
@@ -43,16 +44,28 @@ void RenderRandomTriangle()
 
 		std::uniform_int<> range_x(-200, 200);
 		std::uniform_int<> range_y(-200, 200);
-		V1 = vertex(vector2(range_x(random), range_y(random)), vector3(1, 0, 0) * 255); //Blue
-		V2 = vertex(vector2(range_x(random), range_y(random)), vector3(0, 1, 0) * 255);	//Gre
-		V3 = vertex(vector2(range_x(random), range_y(random)), vector3(0, 0, 1) * 255); // RED
+		for (int i = 0; i < 3; ++i)
+		{
+			V[i] = vertex(vector2(range_x(random), range_y(random)), vector3((int)i == 0, (int)i == 1, (int)i == 2) * 255);
+		}
+		std::sort(V, V + 3, [&](const vertex& a, const vertex& b) {return a.pos.y > b.pos.y; });
+		vector2 temp = V[1].pos - V[0].pos;
+		V[3] = vertex(V[2].pos + (V[0].pos - V[1].pos), vector3(1, 0, 1));
 
 		std::thread([]() {
-			std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+			std::this_thread::sleep_for(std::chrono::milliseconds(300));
 			isWaiting = false;
 		}).detach();
 	}
 
-	Triangle tri(V1, V2, V3);
+	Triangle tri(V[0], V[1], V[2]);
 	tri.RenderTriangle();
+
+	//getBitmap
+	int width, height;
+	auto bmp = OpenBMP("img.bmp", &width, &height);
+
+	Quad quad(V[0], V[1], V[3], V[2]);
+	quad.SetBitmap(bmp, vector2(width, height));
+	quad.RenderQuad();
 }

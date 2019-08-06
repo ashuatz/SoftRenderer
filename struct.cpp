@@ -3,11 +3,12 @@
 #include "customMath.h"
 #include "SoftRenderer.h"
 #include "GDIHelper.h"
+#include "Bmp.h"
 #include <algorithm>
 #include <cstdlib>
+#include <stdexcept>
 
-
-
+#pragma region Triangle
 void Triangle::DrawLine(const vector2Int& start, const vector2Int& end)
 {
 	int dx = abs(end.x - start.x);
@@ -47,7 +48,6 @@ void Triangle::DrawLine(const vector2Int& start, const vector2Int& end)
 		e += 2 * dy;
 	}
 }
-
 
 void Triangle::DrawFlatSideTriangle(const vertex& v1, const vertex& v2, const vertex& v3)
 {
@@ -125,19 +125,22 @@ void Triangle::DrawFlatSideTriangle(const vertex& v1, const vertex& v2, const ve
 	}
 }
 
+//use 2D only
+//TODO: if 3D Coordinates, use 'dot' operator instead.
 vector3 Triangle::GetBarycentricCoordinate(const vector2Int& p)
 {
-	vector3 l(0, 0, 0);
-
 	if (!isDenInitialized)
 	{
 		BarycentricDenominator = 1.f / ((V2.pos.y - V3.pos.y) * (V1.pos.x - V3.pos.x) + (V3.pos.x - V2.pos.x) * (V1.pos.y - V3.pos.y));
 		isDenInitialized = true;
 	}
+	vector3 l(0, 0, 0);
 
-	l.x = clamp(0.f, 1.f, ((V2.pos.y - V3.pos.y) * (p.x - V3.pos.x) + (V3.pos.x - V2.pos.x) * (p.y - V3.pos.y)) * BarycentricDenominator);
-	l.y = clamp(0.f, 1.f, ((V3.pos.y - V1.pos.y) * (p.x - V3.pos.x) + (V1.pos.x - V3.pos.x) * (p.y - V3.pos.y)) * BarycentricDenominator);
-	l.z = 1 - l.x - l.y;
+	l.x = ((V2.pos.y - V3.pos.y) * (p.x - V3.pos.x) + (V3.pos.x - V2.pos.x) * (p.y - V3.pos.y)) * BarycentricDenominator;
+		l.x = clamp(0.f, 1.f, (V3.uv.x - V1.uv.x)  < 0 ? l.x : 1 - l.x);
+	l.y = ((V3.pos.y - V1.pos.y) * (p.x - V3.pos.x) + (V1.pos.x - V3.pos.x) * (p.y - V3.pos.y)) * BarycentricDenominator;
+		l.y = clamp(0.f, 1.f, (V2.uv.y - V1.uv.y) < 0 ? 1 - l.y : l.y);
+	l.z = clamp(0.f, 1.f, 1 - l.x - l.y);
 
 	return l;
 }
@@ -145,45 +148,56 @@ vector3 Triangle::GetBarycentricCoordinate(const vector2Int& p)
 vector3 Triangle::GetColorByBarycentricCoordinate(const vector2Int& p)
 {
 	vector3 lambda = GetBarycentricCoordinate(p);
-	vector3 color(0, 0, 0);
-	color += V1.color * lambda.x;
-	color += V2.color * lambda.y;
-	color += V3.color * lambda.z;
-	return color * 255;
+	if (bitmap != nullptr)
+	{
+		return vector3::ToVector3(GetPixel(lambda.x * bitmapSize.x - 0.5f, bitmapSize.x, lambda.y * bitmapSize.y - 0.5f, bitmap));
+	}
+
+	else
+	{
+		vector3 color(0, 0, 0);
+		color += V1.color * lambda.x;// u
+		color += V2.color * lambda.y;// v 
+		color += V3.color * lambda.z; 
+		return color * 255;
+	}
 }
 
+Triangle::Triangle(const vertex & p1, const vertex & p2, const vertex & p3) :V1(p1), V2(p2), V3(p3), bitmap(nullptr), isDenInitialized(false)
+{
+
+}
 
 void Triangle::RenderTriangle()
 {
-	//sort by y axis
-	vertex vts[3]{ V1,V2,V3 };
+	RenderTriangle(V1, V2, V3);
+}
+
+void Triangle::RenderTriangle(const vertex & _v1, const vertex & _v2, const vertex & _v3)
+{	//sort by y axis
+
+	vertex vts[3]{ _v1,_v2,_v3 };
 	std::sort(vts, vts + 3, [&](const vertex& a, const vertex& b) {return a.pos.y > b.pos.y; });
 
-	V1 = vts[0];
-	V2 = vts[1];
-	V3 = vts[2];
+	auto& v1 = vts[0];
+	auto& v2 = vts[1];
+	auto& v3 = vts[2];
 
-	if (V1.pos.y == V3.pos.y)
+	if (v1.pos.y == v3.pos.y)
 	{
-		DrawFlatSideTriangle(V1, V2, V3);
+		DrawFlatSideTriangle(v1, v2, v3);
 	}
-	else if (V1.pos.y == V2.pos.y)
+	else if (v1.pos.y == v2.pos.y)
 	{
-		DrawFlatSideTriangle(V3, V1, V2);
+		DrawFlatSideTriangle(v3, v1, v2);
 	}
 	else
 	{
-		float x = V1.pos.x - (V1.pos.y - V2.pos.y) * (V1.pos.x - V3.pos.x) / (V1.pos.y - V3.pos.y);
-		vertex v4(vector2(round(x), V2.pos.y), vector3(1, 1, 1));
-		DrawFlatSideTriangle(V1, V2, v4); // up-side
-		DrawFlatSideTriangle(V3, V2, v4); // down-side
-
-		PutPixel(v4.pos.x, v4.pos.y, v4.color * 0);
+		float x = v1.pos.x - (v1.pos.y - v2.pos.y) * (v1.pos.x - v3.pos.x) / (v1.pos.y - v3.pos.y);
+		vertex v4(vector2(round(x), v2.pos.y), vector3(1, 1, 1));
+		DrawFlatSideTriangle(v1, v2, v4); // up-side
+		DrawFlatSideTriangle(v3, v2, v4); // down-side
 	}
-
-	PutPixel(V1.pos.x, V1.pos.y, V1.color * 0);
-	PutPixel(V2.pos.x, V2.pos.y, V2.color * 0);
-	PutPixel(V3.pos.x, V3.pos.y, V3.color * 0);
 }
 
 
@@ -196,3 +210,64 @@ void Triangle::PutPixel(int x, int y, vector3 color)
 	DWORD offset = g_nClientWidth * g_nClientHeight / 2 + g_nClientWidth / 2 + x + g_nClientWidth * -y;
 	*(dest + offset) = vector3::ToColor(color);
 }
+
+const vertex& Triangle::operator[](const int& index) const
+{
+	switch (index)
+	{
+		case 0: return V1;
+		case 1: return V2;
+		case 2: return V3;
+		default:throw std::invalid_argument("index out of range");
+	}
+}
+
+#pragma endregion
+
+#pragma region Quad
+
+Quad::Quad(const vertex & p1, const vertex & p2, const vertex & p3, const vertex & p4)
+	: Triangle(p1, p2, p3), V4(p4), T1(p1, p2, p3), T2(p1, p2, p3), isUVDenInitialized(false)
+{
+	vector2 pivot = p1.pos;
+	auto Vertexs = new vertex[3]{ p2,p3,p4 };
+	std::sort(Vertexs, Vertexs + 3, [&](const vertex& a, const vertex& b) {return atan2((a.pos - pivot).y, (a.pos - pivot).x) > atan2((b.pos - pivot).y, (b.pos - pivot).x); });
+
+	*(*this)[0] = p1;
+	(*this)[0]->uv = vector2(0, 0);
+	for (int i = 1; i <= 3; ++i)
+	{
+		*(*this)[i] = Vertexs[i - 1];
+		(*this)[i]->uv = vector2(((i & 1) == 1) ^ ((i & 2) == 2), ((i & 2) == 2) ^ ((i & 4) == 4));
+	}
+	T1 = Triangle(V2, V4, V1);
+	T2 = Triangle(V4, V2, V3);
+}
+
+void Quad::SetBitmap(ULONG * bmp, vector2 size)
+{
+	bitmap = bmp; 
+	bitmapSize = size;
+	T1.SetBitmap(bitmap, bitmapSize);
+	T2.SetBitmap(bitmap, bitmapSize);
+}
+
+void Quad::RenderQuad()
+{
+	T1.RenderTriangle();
+	T2.RenderTriangle();
+}
+
+vertex* Quad::operator[](const int& index)
+{
+	switch (index)
+	{
+		case 0: return &V1;
+		case 1: return &V2;
+		case 2: return &V3;
+		case 3: return &V4;
+		default:throw std::invalid_argument("index out of range");
+	}
+}
+
+#pragma endregion

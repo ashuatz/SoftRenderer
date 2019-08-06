@@ -5,40 +5,52 @@
 
 struct Triangle
 {
-private:
+protected:
+	ULONG* bitmap;
+	vector2 bitmapSize;
 	vertex V1, V2, V3;
 	bool isDenInitialized;
 	float BarycentricDenominator;
+
 public:
-	Triangle(const vertex& p1, const vertex& p2, const vertex& p3) :V1(p1), V2(p2), V3(p3), isDenInitialized(false) {}
-	void RenderTriangle();
+	Triangle(const vertex& p1, const vertex& p2, const vertex& p3);
+	virtual void SetBitmap(ULONG* bmp, vector2 size) { bitmap = bmp; bitmapSize = size; }
+	virtual void RenderTriangle();
+	virtual void RenderTriangle(const vertex& p1, const vertex& p2, const vertex& p3);
 
-private:
+protected:
+	virtual	void DrawLine(const vector2Int& start, const vector2Int& end);
+	virtual void DrawFlatSideTriangle(const vertex& v1, const vertex& v2, const vertex& v3);
+	virtual vector3 GetBarycentricCoordinate(const vector2Int& p);
+	virtual vector3 GetColorByBarycentricCoordinate(const vector2Int& p);
 
-	void DrawLine(const vector2Int& start, const vector2Int& end);
-	void DrawFlatSideTriangle(const vertex& v1, const vertex& v2, const vertex& v3);
-	vector3 GetBarycentricCoordinate(const vector2Int& p);
-	vector3 GetColorByBarycentricCoordinate(const vector2Int& p);
+	virtual void PutPixel(int x, int y, vector3 color);
 
-	void PutPixel(int x, int y, vector3 color);
+public:
+	const vertex& operator[](const int& index) const;
+	virtual ~Triangle() {}
 };
 
-struct Quad
+struct Quad : protected Triangle
 {
 private:
-	vertex m_v1, m_v2, m_v3, m_v4;
+	vertex V4;
+	Triangle T1,T2;
+
+	bool isUVDenInitialized;
+	float UVBarycentricDenominator;
 
 public:
-	Quad(const vertex& p1, const vertex& p2, const vertex& p3, const vertex& p4) :m_v1(p1), m_v2(p2), m_v3(p3),m_v4(p4) {}
+	Quad(const vertex& p1, const vertex& p2, const vertex& p3, const vertex& p4);
+	virtual void SetBitmap(ULONG* bmp, vector2 size) override;
 	void RenderQuad();
 
-private:
+protected:
+	//const vector2 GetUVCoordinates(const vector2Int& p);
+	//virtual vector3 GetColorByBarycentricCoordinate(const vector2Int& p) override;
 
-	void DrawLine(const vector2Int& start, const vector2Int& end);
-	void DrawFlatSideTriangle(const vertex& v1, const vertex& v2, const vertex& v3);
-	vector3 GetBarycentricCoordinate(const vector2& point);
-	vector3 GetColorByBarycentricCoordinate(const vector2& p);
-
-	void PutPixel(int x, int y, vector3 color);
-
+public:
+	vertex* operator[](const int& index) ;
+	virtual ~Quad() {
+	}
 };

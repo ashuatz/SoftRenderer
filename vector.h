@@ -215,5 +215,14 @@ public:
 	{
 		return ((COLORREF)(((BYTE)(vector.z) | ((WORD)((BYTE)(vector.y)) << 8)) | (((DWORD)(BYTE)(vector.x)) << 16)));
 	}
+
+	static const vector3 ToVector3(const COLORREF& color)
+	{
+		vector3 v(0, 0, 0);
+		v.x = 0 | (color & 255);
+		v.y = 0 | ((color >> 8) & 255);
+		v.z = 0 | ((color >> 16) & 255);
+		return v;
+	}
 };
 
