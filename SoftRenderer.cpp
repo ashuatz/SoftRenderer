@@ -13,6 +13,7 @@ bool g_bIsActive;
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
+HWND hWnd;
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
@@ -96,7 +97,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-
+   
    if (!hWnd)
    {
       return FALSE;
@@ -230,7 +231,7 @@ BOOL WindowInit(HINSTANCE hInstance, int nCmdShow)
 	int WindowWidth = rect.right - rect.left + 1;
 	int WindowHeight = rect.bottom - rect.top + 1;
 
-	HWND hWnd = CreateWindowW(szWindowClass, szDeveloper, WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX,
+	hWnd = CreateWindowW(szWindowClass, szDeveloper, WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX,
 		(GetSystemMetrics(SM_CXFULLSCREEN) - WindowWidth) / 2, (GetSystemMetrics(SM_CYFULLSCREEN) - WindowHeight) / 2, WindowWidth, WindowHeight,
 		nullptr, nullptr, hInstance, nullptr);
 
