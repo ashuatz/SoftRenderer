@@ -226,3 +226,118 @@ public:
 	}
 };
 
+
+struct vector4
+{
+public:
+	float x;
+	float y;
+	float z;
+	float w;
+
+	vector4() : x(0), y(0), z(0), w(0) {}
+	vector4(float x, float y, float z,float w) : x(x), y(y), z(z),w(w) {}
+	vector4(const vector4& rhs) : x(rhs.x), y(rhs.y), z(rhs.z), w(rhs.w) {}
+
+	vector4* Normalize()
+	{
+		float t = sqrt(this->x * this->x + this->y * this->y + this->z * this->z + this->w * this->w);
+		this->x /= t;
+		this->y /= t;
+		this->z /= t;
+		this->w /= t;
+		return this;
+	}
+
+	vector4 Normalized()
+	{
+		vector4 temp(*this);
+		return *temp.Normalize();
+	}
+
+	vector4& operator+=(const vector4& rhv)
+	{
+		this->x += rhv.x;
+		this->y += rhv.y;
+		this->z += rhv.z;
+		this->w += rhv.w;
+
+		return *this;
+	}
+
+	vector4& operator-=(const vector4& rhv)
+	{
+		this->x -= rhv.x;
+		this->y -= rhv.y;
+		this->z -= rhv.z;
+		this->w -= rhv.w;
+
+		return *this;
+	}
+
+	vector4& operator*=(const float& value)
+	{
+		this->x *= value;
+		this->y *= value;
+		this->z *= value;
+		this->w *= value;
+
+		return *this;
+	}
+
+	vector4& operator*=(const vector4& rhv)
+	{
+		this->x *= rhv.x;
+		this->y *= rhv.y;
+		this->z *= rhv.z;
+		this->w *= rhv.w;
+
+		return *this;
+	}
+
+	const vector4 operator+(const vector4& rhv) const
+	{
+		vector4 temp(rhv);
+		temp += rhv;
+		return temp;
+	}
+
+	const vector4 operator-(const vector4& rhv) const
+	{
+		vector4 temp(rhv);
+		temp -= rhv;
+		return temp;
+	}
+
+	const vector4 operator*(const float& value) const
+	{
+		vector4 temp(*this);
+		temp *= value;
+		return temp;
+	}
+
+	float& vector4::operator[](const int& index) 
+	{
+		switch (index)
+		{
+		case 0: return x;
+		case 1: return y;
+		case 2: return z;
+		case 3: return w;
+		default:throw std::invalid_argument("index out of range");
+		}
+	}
+
+	const float& vector4::operator[](const int& index) const
+	{
+		switch (index)
+		{
+		case 0: return x;
+		case 1: return y;
+		case 2: return z;
+		case 3: return w;
+		default:throw std::invalid_argument("index out of range");
+		}
+	}
+};
+

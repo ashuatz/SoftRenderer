@@ -13,22 +13,12 @@
 #include <functional>
 #include <chrono>
 #include <future>
-#include <Windows.h>
 #include <stdexcept>
-#include "performanceCounter.h"
-#include <sstream>
 
 void RenderRandomTriangle();
 
 void UpdateFrame(void)
 {
-	//check counter
-	double counter = PerformanceCounter::GetInstance().GetCounter();
-	auto titleName = (std::wstringstream() << counter).str().append(_T("ms"));
-	//Settext
-	SetWindowText(hWnd, titleName.c_str());
-	PerformanceCounter::GetInstance().StartCounter();
-
 	// Buffer Clear
 	SetColor(32, 128, 255);
 	Clear();

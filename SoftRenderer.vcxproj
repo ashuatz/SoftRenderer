@@ -153,6 +153,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="struct.h" />
+    <ClInclude Include="Time.h" />
     <ClInclude Include="vector.h" />
     <ClInclude Include="vertex.h" />
   </ItemGroup>

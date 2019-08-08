@@ -1,10 +1,14 @@
 // SoftRenderer.cpp : 응용 프로그램에 대한 진입점을 정의합니다.
 //
-
 #include "stdafx.h"
 #include "SoftRenderer.h"
 #include "GDIHelper.h"
 #include "Renderer.h"
+#include "performanceCounter.h"
+#include "Time.h"
+
+#include <sstream>
+#include <iomanip>
 
 int g_nClientWidth = 640;
 int g_nClientHeight = 480;
@@ -208,6 +212,16 @@ int MsgLoop(HACCEL hAccelTable)
 		}
 		else if (g_bIsActive)
 		{
+			//check counter
+			Time::GetInstance().CheckCounter();
+			auto titleName = (std::wstringstream() << std::setw(4) << std::setfill(_T(' ')) << Time::GetInstance().GetFrame()).str()
+				.append(_T(" Frame    "))
+				.append((std::wstringstream() << std::setw(8) << std::setfill(_T(' ')) << std::setprecision(5) << (Time::GetInstance().GetDeltaTime())).str())
+				.append(_T(" ms"));
+
+			//Settext
+			SetWindowText(hWnd, titleName.c_str());
+
 			UpdateFrame();
 		}
 		else
