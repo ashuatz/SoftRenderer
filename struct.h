@@ -19,6 +19,7 @@ public:
 	virtual void RenderTriangle(const vertex& p1, const vertex& p2, const vertex& p3);
 
 protected:
+	void DrawScanline(const vector2Int & start, const vector2Int & end);
 	virtual	void DrawLine(const vector2Int& start, const vector2Int& end);
 	virtual void DrawFlatSideTriangle(const vertex& v1, const vertex& v2, const vertex& v3);
 	virtual vector3 GetBarycentricCoordinate(const vector2Int& p);

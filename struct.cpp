@@ -6,6 +6,19 @@
 #include "customMath.h"
 
 #pragma region Triangle
+void Triangle::DrawScanline(const vector2Int& start, const vector2Int& end)
+{
+	int dx = abs(end.x - start.x);
+	const int signx = sign(end.x - start.x);
+
+	vector2Int current = start;
+	for (int i = 0; i < dx; ++i)
+	{
+		PutPixel(current.x, current.y, GetColorByBarycentricCoordinate(current));
+		current.x += signx;
+	}
+}
+
 void Triangle::DrawLine(const vector2Int& start, const vector2Int& end)
 {
 	int dx = abs(end.x - start.x);
@@ -81,8 +94,6 @@ void Triangle::DrawFlatSideTriangle(const vertex& v1, const vertex& v2, const ve
 
 	for (int i = 0; i <= dx1; ++i)
 	{
-		DrawLine(vt1, vt2);
-
 		//edge 1
 		while (e1 >= 0)
 		{
@@ -119,6 +130,8 @@ void Triangle::DrawFlatSideTriangle(const vertex& v1, const vertex& v2, const ve
 
 			e2 += 2 * dy2;
 		}
+
+		DrawScanline(vt1, vt2);
 	}
 }
 
@@ -226,18 +239,6 @@ const vertex& Triangle::operator[](const int& index) const
 Quad::Quad(const vertex & p1, const vertex & p2, const vertex & p3, const vertex & p4)
 	: Triangle(p1, p2, p3), V4(p4), T1(p1, p2, p3), T2(p1, p2, p3), isUVDenInitialized(false)
 {
-	//vector2 pivot = p1.pos;
-	//auto Vertexs = new vertex[3]{ p2,p3,p4 };
-	//std::sort(Vertexs, Vertexs + 3, [&](const vertex& a, const vertex& b) {return atan2((a.pos - pivot).y, (a.pos - pivot).x) > atan2((b.pos - pivot).y, (b.pos - pivot).x); });
-
-	//*(*this)[0] = p1;
-	//(*this)[0]->uv = vector2(0, 0);
-	//for (int i = 1; i <= 3; ++i)
-	//{
-	//	*(*this)[i] = Vertexs[i - 1];
-	//	(*this)[i]->uv = vector2(((i & 1) == 1) ^ ((i & 2) == 2), ((i & 2) == 2) ^ ((i & 4) == 4));
-	//}
-
 	T1 = Triangle(V2, V4, V1);
 	T2 = Triangle(V4, V2, V3);
 }

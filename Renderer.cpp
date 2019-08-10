@@ -35,7 +35,7 @@ void RenderRandomTriangle()
 	static Matrix3x3 matrixT, matrixR, matrixS;
 	static Matrix3x3 matrix;
 
-	rotation = (Time::GetInstance().GetDeltaTime() / 1000) * 0.1f;
+	rotation = 0.0001;
 
 	MatrixIdentity(matrix);
 	MatrixTranslation(matrixT, 0, 0);
@@ -50,6 +50,7 @@ void RenderRandomTriangle()
 		{vector2(-50, -50), vector3(0, 0, 1),vector2(0,1)},
 		{vector2(50, -50), vector3(1, 1, 1),vector2(1,1)} 
 	};
+
 	for each (auto& var in V)
 	{
 		var.pos = var.pos * matrix;
