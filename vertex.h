@@ -4,7 +4,7 @@
 
 struct vertex
 {
-	vector2 pos;
+	vector3 pos;
 	vector3 color;
 	vector2 uv;
 

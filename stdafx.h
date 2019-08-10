@@ -18,6 +18,25 @@
 #include <tchar.h>
 #include <math.h>
 
+//C++ 런타임 헤더 파일
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+
+#include <list>
+#include <vector>
+#include <map>
+#include <filesystem>
+#include <functional>
+#include <algorithm>
+#include <random>
+#include <memory>
+#include <string>
+#include <fstream>
+#include <chrono>
+#include <future>
+#include <stdexcept>
+
 // TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
 
 #define PI 					(3.1415926535897932f)

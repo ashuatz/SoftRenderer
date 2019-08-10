@@ -2,15 +2,14 @@
 #include "stdafx.h"
 #include "SoftRenderer.h"
 
-
 template <typename T>
-static int sign(const T& val)
+int sign(const T& val)
 {
 	return (T(0) < val) - (val < T(0));
 }
 
 template<typename T>
-static void customSwap(T& a, T& b)
+void customSwap(T& a, T& b)
 {
 	T Temp = a;
 	a = b;

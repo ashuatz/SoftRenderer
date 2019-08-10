@@ -10,12 +10,15 @@ protected:
 	Singleton(const Singleton<T>& src) = delete;
 	Singleton<T>& operator=(const Singleton<T>& rhs) = delete;
 
+	virtual void Initialize() {};
+
 public:
 	static T& GetInstance()
 	{
 		std::call_once(m_onceFlag, []
 		{
-			m_instance.reset(new T);
+			auto instance = new T;
+			m_instance.reset(instance);
 		});
 
 		return *m_instance.get();

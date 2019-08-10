@@ -1,101 +1,93 @@
 #include "stdafx.h"
-#include "matrix.h"
-#include "vector.h"
+#include "Matrix.h"
 
-#define isRightHandCoordination true
-#define ToCoordination(angle) isRightHandCoordination ? -angle : angle
-
-Matrix4x4::Matrix4x4()
+Matrix2x2 &MatrixIdentity(Matrix2x2 &matrix)
 {
-	std::fill(data.begin(), data.end(), 0);
-	//make to Identity
-	data[0] = data[5] = data[10] = data[15] = 1;
+	matrix.m[0][1] = matrix.m[1][0] = 0.0f;
+
+	matrix.m[0][0] = matrix.m[1][1] = 1.0f;
+
+	return matrix;
 }
 
-
-Matrix4x4 Matrix4x4::CreateScale(vector4 scale)
+Matrix3x3 &MatrixIdentity(Matrix3x3 &matrix)
 {
-	Matrix4x4 temp = Matrix4x4();
-	temp.data[0] = scale.x;
-	temp.data[5] = scale.y;
-	temp.data[10] = scale.z;
-	return temp;
+	matrix.m[0][1] = matrix.m[0][2] =
+		matrix.m[1][0] = matrix.m[1][2] =
+			matrix.m[2][0] = matrix.m[2][1] = 0.0f;
+
+	matrix.m[0][0] = matrix.m[1][1] = matrix.m[2][2] = 1.0f;
+
+	return matrix;
 }
 
-Matrix4x4 Matrix4x4::CreateTranslation(vector4 translation)
+Matrix4x4 &MatrixIdentity(Matrix4x4 &matrix)
 {
-	Matrix4x4 temp = Matrix4x4();
-	temp.data[3] = translation.x;
-	temp.data[7] = translation.y;
-	temp.data[11] = translation.z;
-	return temp;
+	matrix.m[0][1] = matrix.m[0][2] = matrix.m[0][3] =
+		matrix.m[1][0] = matrix.m[1][2] = matrix.m[1][3] =
+			matrix.m[2][0] = matrix.m[2][1] = matrix.m[2][3] =
+				matrix.m[3][0] = matrix.m[3][1] = matrix.m[3][2] = 0.0f;
+
+	matrix.m[0][0] = matrix.m[1][1] = matrix.m[2][2] = matrix.m[3][3] = 1.0f;
+
+	return matrix;
 }
 
-Matrix4x4 Matrix4x4::CreateRotationX(float angle)
+Matrix3x3 &MatrixTranslation(Matrix3x3 &matrix, const float &x, const float &y)
 {
-	Matrix4x4 temp = Matrix4x4();
-	temp.data[5] = std::cos(ToCoordination(angle));
-	temp.data[6] = -std::sin(ToCoordination(angle));
-	temp.data[9] = std::sin(ToCoordination(angle));
-	temp.data[10] = std::cos(ToCoordination(angle));
-	return temp;
+	MatrixIdentity(matrix);
+
+	matrix.m[2][0] = x;
+	matrix.m[2][1] = y;
+
+	return matrix;
 }
 
-Matrix4x4 Matrix4x4::CreateRotationY(float angle)
+Matrix4x4 &MatrixTranslation(Matrix4x4 &matrix, const float &x, const float &y, const float &z)
 {
-	Matrix4x4 temp = Matrix4x4();
-	temp.data[0] = std::cos(ToCoordination(angle));
-	temp.data[2] = std::sin(ToCoordination(angle));
-	temp.data[8] = -std::sin(ToCoordination(angle));
-	temp.data[10] = std::cos(ToCoordination(angle));
-	return temp;
+	MatrixIdentity(matrix);
+
+	matrix.m[3][0] = x;
+	matrix.m[3][1] = y;
+	matrix.m[3][2] = z;
+
+	return matrix;
 }
 
-Matrix4x4 Matrix4x4::CreateRotationZ(float angle)
+Matrix3x3 &MatrixScale(Matrix3x3 &matrix, const float &x, const float &y)
 {
-	Matrix4x4 temp = Matrix4x4();
-	temp.data[0] = std::cos(ToCoordination(angle));
-	temp.data[1] = -std::sin(ToCoordination(angle));
-	temp.data[4] = std::sin(ToCoordination(angle));
-	temp.data[5] = std::cos(ToCoordination(angle));
-	return temp;
+	MatrixIdentity(matrix);
+
+	matrix.m[0][0] = x;
+	matrix.m[1][1] = y;
+
+	return matrix;
 }
 
-Matrix4x4::Matrix4x4(vector4 column0, vector4 column1, vector4 column2, vector4 column3)
+Matrix4x4 &MatrixScale(Matrix4x4 &matrix, const float &x, const float &y, const float &z)
 {
-	for (int i = 0; i < 4; ++i)
-	{
-		data[0 + i] = column0[i];
-		data[4 + i] = column1[i];
-		data[8 + i] = column2[i];
-		data[12 + i] = column3[i];
-	}
+	MatrixIdentity(matrix);
+
+	matrix.m[0][0] = x;
+	matrix.m[1][1] = y;
+	matrix.m[2][2] = z;
+
+	return matrix;
 }
 
-inline Matrix4x4 operator+(const Matrix4x4& lhs, const Matrix4x4& rhs)
+Matrix3x3 &MatrixRotationDir(Matrix3x3 &matrix, const float &dir)
 {
-	Matrix4x4 temp = Matrix4x4(lhs);
-	temp += rhs;
-	return temp;
+	MatrixIdentity(matrix);
+
+	matrix.m[0][0] = cosf(dir);
+	matrix.m[0][1] = sinf(dir);
+	matrix.m[1][0] = -sinf(dir);
+	matrix.m[1][1] = cosf(dir);
+
+	return matrix;
 }
 
-inline Matrix4x4 operator-(const Matrix4x4& lhs, const Matrix4x4& rhs)
+Matrix4x4 &MatrixRotationYawPitchRoll(Matrix4x4 &matrix, const float &yaw, const float &pitch, const float roll)
 {
-	Matrix4x4 temp = Matrix4x4(lhs);
-	temp -= rhs;
-	return temp;
-}
-
-inline Matrix4x4 operator*(const Matrix4x4& lhs, const Matrix4x4& rhs)
-{
-	Matrix4x4 temp = Matrix4x4(lhs);
-	temp *= rhs;
-	return temp;
-}
-
-inline Matrix4x4 operator*(const Matrix4x4& lhs, const float& rhs)
-{
-	Matrix4x4 temp = Matrix4x4(lhs);
-	temp *= rhs;
-	return temp;
+	return matrix;
 }

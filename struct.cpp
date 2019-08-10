@@ -1,12 +1,9 @@
 #include "stdafx.h"
 #include "struct.h"
-#include "customMath.h"
 #include "SoftRenderer.h"
 #include "GDIHelper.h"
 #include "Bmp.h"
-#include <algorithm>
-#include <cstdlib>
-#include <stdexcept>
+#include "customMath.h"
 
 #pragma region Triangle
 void Triangle::DrawLine(const vector2Int& start, const vector2Int& end)
@@ -229,17 +226,18 @@ const vertex& Triangle::operator[](const int& index) const
 Quad::Quad(const vertex & p1, const vertex & p2, const vertex & p3, const vertex & p4)
 	: Triangle(p1, p2, p3), V4(p4), T1(p1, p2, p3), T2(p1, p2, p3), isUVDenInitialized(false)
 {
-	vector2 pivot = p1.pos;
-	auto Vertexs = new vertex[3]{ p2,p3,p4 };
-	std::sort(Vertexs, Vertexs + 3, [&](const vertex& a, const vertex& b) {return atan2((a.pos - pivot).y, (a.pos - pivot).x) > atan2((b.pos - pivot).y, (b.pos - pivot).x); });
+	//vector2 pivot = p1.pos;
+	//auto Vertexs = new vertex[3]{ p2,p3,p4 };
+	//std::sort(Vertexs, Vertexs + 3, [&](const vertex& a, const vertex& b) {return atan2((a.pos - pivot).y, (a.pos - pivot).x) > atan2((b.pos - pivot).y, (b.pos - pivot).x); });
 
-	*(*this)[0] = p1;
-	(*this)[0]->uv = vector2(0, 0);
-	for (int i = 1; i <= 3; ++i)
-	{
-		*(*this)[i] = Vertexs[i - 1];
-		(*this)[i]->uv = vector2(((i & 1) == 1) ^ ((i & 2) == 2), ((i & 2) == 2) ^ ((i & 4) == 4));
-	}
+	//*(*this)[0] = p1;
+	//(*this)[0]->uv = vector2(0, 0);
+	//for (int i = 1; i <= 3; ++i)
+	//{
+	//	*(*this)[i] = Vertexs[i - 1];
+	//	(*this)[i]->uv = vector2(((i & 1) == 1) ^ ((i & 2) == 2), ((i & 2) == 2) ^ ((i & 4) == 4));
+	//}
+
 	T1 = Triangle(V2, V4, V1);
 	T2 = Triangle(V4, V2, V3);
 }

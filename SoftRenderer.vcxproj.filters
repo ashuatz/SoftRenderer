@@ -25,6 +25,9 @@
     <Filter Include="App">
       <UniqueIdentifier>{0d6601b9-2612-4bec-a657-0fa5a68b8b21}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{487ee182-01a7-4a70-a55f-b78b14bd5b28}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -69,6 +72,9 @@
     <ClInclude Include="Time.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="matrix.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -87,6 +93,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Bmp.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="vector.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

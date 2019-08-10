@@ -7,8 +7,6 @@
 #include "performanceCounter.h"
 #include "Time.h"
 
-#include <sstream>
-#include <iomanip>
 
 int g_nClientWidth = 640;
 int g_nClientHeight = 480;

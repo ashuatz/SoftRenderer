@@ -7,13 +7,7 @@
 #include "customMath.h"
 #include "struct.h"
 #include "Bmp.h"
-
-#include <random>
-#include <ctime>
-#include <functional>
-#include <chrono>
-#include <future>
-#include <stdexcept>
+#include "Time.h"
 
 void RenderRandomTriangle();
 
@@ -35,31 +29,52 @@ void RenderRandomTriangle()
 {
 	static bool isWaiting = false;
 
-	static vertex V[4]{ {vector2(-50, 50), vector3(1, 0, 0)},{vector2(50, 50), vector3(0, 1, 0)},{vector2(-50, -50), vector3(0, 0, 1)},{vector2(50, -50), vector3(1, 1, 1)} };
+	static vector2 pos;
+	static float rotation;
+	static vector2 scale(1,1);
+	static Matrix3x3 matrixT, matrixR, matrixS;
+	static Matrix3x3 matrix;
 
-	if (!isWaiting)
+	rotation = (Time::GetInstance().GetDeltaTime() / 1000) * 0.1f;
+
+	MatrixIdentity(matrix);
+	MatrixTranslation(matrixT, 0, 0);
+	MatrixRotationDir(matrixR, rotation);
+	MatrixScale(matrixS, scale.x, scale.y);
+
+	matrix = matrixS * matrixR * matrixT;
+
+	static vertex V[4]{
+		{vector2(-50, 50), vector3(1, 0, 0),vector2(0,0)},
+		{vector2(50, 50), vector3(0, 1, 0),vector2(1,0)},
+		{vector2(-50, -50), vector3(0, 0, 1),vector2(0,1)},
+		{vector2(50, -50), vector3(1, 1, 1),vector2(1,1)} 
+	};
+	for each (auto& var in V)
 	{
-		isWaiting = true;
-		std::mt19937 random((unsigned int)time(0));
-
-		std::uniform_int<> range_x(-200, 200);
-		std::uniform_int<> range_y(-200, 200);
-		for (int i = 0; i < 3; ++i)
-		{
-			V[i] = vertex(vector2(range_x(random), range_y(random)), vector3((int)i == 0, (int)i == 1, (int)i == 2) * 255);
-		}
-		std::sort(V, V + 3, [&](const vertex& a, const vertex& b) {return a.pos.y > b.pos.y; });
-		vector2 temp = V[1].pos - V[0].pos;
-		V[3] = vertex(V[2].pos + (V[0].pos - V[1].pos), vector3(1, 0, 1));
-
-		std::thread([]() {
-			std::this_thread::sleep_for(std::chrono::milliseconds(300));
-			isWaiting = false;
-		}).detach();
+		var.pos = var.pos * matrix;
 	}
 
-	Triangle tri(V[0], V[1], V[2]);
-	tri.RenderTriangle();
+	//if (!isWaiting)
+	//{
+	//	isWaiting = true;
+	//	std::mt19937 random((unsigned int)time(0));
+
+	//	std::uniform_int<> range_x(-200, 200);
+	//	std::uniform_int<> range_y(-200, 200);
+	//	for (int i = 0; i < 3; ++i)
+	//	{
+	//		V[i] = vertex(vector2(range_x(random), range_y(random)), vector3((int)i == 0, (int)i == 1, (int)i == 2) * 255);
+	//	}
+	//	std::sort(V, V + 3, [&](const vertex& a, const vertex& b) {return a.pos.y > b.pos.y; });
+	//	vector2 temp = V[1].pos - V[0].pos;
+	//	V[3] = vertex(V[2].pos + (V[0].pos - V[1].pos), vector3(1, 0, 1));
+
+	//	std::thread([]() {
+	//		std::this_thread::sleep_for(std::chrono::milliseconds(300));
+	//		isWaiting = false;
+	//	}).detach();
+	//}
 
 	//getBitmap
 	int width, height;

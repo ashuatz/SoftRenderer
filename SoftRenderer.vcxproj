@@ -145,6 +145,7 @@
     <ClInclude Include="Bmp.h" />
     <ClInclude Include="customMath.h" />
     <ClInclude Include="GDIHelper.h" />
+    <ClInclude Include="matrix.h" />
     <ClInclude Include="performanceCounter.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Resource.h" />
@@ -160,6 +161,7 @@
   <ItemGroup>
     <ClCompile Include="Bmp.cpp" />
     <ClCompile Include="GDIHelper.cpp" />
+    <ClCompile Include="matrix.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SoftRenderer.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -169,6 +171,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="struct.cpp" />
+    <ClCompile Include="vector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SoftRenderer.rc" />
