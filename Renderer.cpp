@@ -9,10 +9,15 @@
 #include "Bmp.h"
 #include "Time.h"
 
+#include "BaseRenderer.h"
+
 void RenderRandomTriangle();
 
 void UpdateFrame(void)
 {
+	//test
+	//Object::LoadResources();
+
 	// Buffer Clear
 	SetColor(32, 128, 255);
 	Clear();
@@ -31,11 +36,11 @@ void RenderRandomTriangle()
 
 	static vector2 pos;
 	static float rotation;
-	static vector2 scale(1,1);
+	static vector2 scale(1, 1);
 	static Matrix3x3 matrixT, matrixR, matrixS;
 	static Matrix3x3 matrix;
 
-	rotation = 0.0001;
+	rotation = 0.0321;
 
 	MatrixIdentity(matrix);
 	MatrixTranslation(matrixT, 0, 0);
@@ -44,11 +49,14 @@ void RenderRandomTriangle()
 
 	matrix = matrixS * matrixR * matrixT;
 
-	static vertex V[4]{
-		{vector2(-50, 50), vector3(1, 0, 0),vector2(0,0)},
-		{vector2(50, 50), vector3(0, 1, 0),vector2(1,0)},
-		{vector2(-50, -50), vector3(0, 0, 1),vector2(0,1)},
-		{vector2(50, -50), vector3(1, 1, 1),vector2(1,1)} 
+	static vertex V[6]{
+		{vector2(50, 50), vector3(0, 1, 0),vector2(1,0)}, //2
+		{vector2(-50, -50), vector3(0, 0, 1),vector2(0,1)}, //4
+		{vector2(-50, 50), vector3(1, 0, 0),vector2(0,0)}, //1
+
+		{vector2(-50, -50), vector3(0, 0, 1),vector2(0,1)}, //4
+		{vector2(50, 50), vector3(0, 1, 0),vector2(1,0)}, //2
+		{vector2(50, -50), vector3(1, 1, 1),vector2(1,1)}, //3
 	};
 
 	for each (auto& var in V)
@@ -77,11 +85,11 @@ void RenderRandomTriangle()
 	//	}).detach();
 	//}
 
-	//getBitmap
-	int width, height;
-	auto bmp = OpenBMP("img.bmp", &width, &height);
 
-	Quad quad(V[0], V[1], V[3], V[2]);
-	quad.SetBitmap(bmp, vector2(width, height));
-	quad.RenderQuad();
+	static Sprite spr("img.bmp");
+	std::vector<vertex> vertexs(V, V + 6);
+	static Renderer* renderer = new SpriteRenderer();
+	((SpriteRenderer*)renderer)->currentSprite = &spr;
+
+	renderer->Render(vertexs);
 }

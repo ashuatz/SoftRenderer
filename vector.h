@@ -545,6 +545,21 @@ struct vector4
 		return vector4{rhs.x * lhs, rhs.y * lhs, rhs.z * lhs};
 	}
 
+	static COLORREF ToColor(const vector4& vector)
+	{
+		return ((COLORREF)(((BYTE)(vector.w) | ((WORD)((BYTE)(vector.z)) << 8)) | (((DWORD)(BYTE)(vector.y)) << 16) | (((DWORD)(BYTE)(vector.x)) << 24)));
+	}
+
+	static const vector4 ToVector4(const COLORREF& color)
+	{
+		vector4 v;
+		v.x = 0 | (color & 255);	
+		v.y = 0 | ((color >> 8) & 255);
+		v.z = 0 | ((color >> 16) & 255);
+		v.w = 0 | ((color >> 24) & 255);
+		return v;
+	}
+
 public:
 	float x, y, z, w;
 };

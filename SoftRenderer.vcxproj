@@ -142,9 +142,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BaseRenderer.h" />
     <ClInclude Include="Bmp.h" />
     <ClInclude Include="customMath.h" />
     <ClInclude Include="GDIHelper.h" />
+    <ClInclude Include="lodepng.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="performanceCounter.h" />
     <ClInclude Include="Renderer.h" />
@@ -153,14 +155,15 @@
     <ClInclude Include="SoftRenderer.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="struct.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="vector.h" />
     <ClInclude Include="vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BaseRenderer.cpp" />
     <ClCompile Include="Bmp.cpp" />
     <ClCompile Include="GDIHelper.cpp" />
+    <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SoftRenderer.cpp" />
@@ -170,7 +173,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="struct.cpp" />
     <ClCompile Include="vector.cpp" />
   </ItemGroup>
   <ItemGroup>
