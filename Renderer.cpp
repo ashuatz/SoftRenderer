@@ -43,7 +43,7 @@ void RenderRandomTriangle()
 	rotation = 0.0321;
 
 	MatrixIdentity(matrix);
-	MatrixTranslation(matrixT, 0, 0);
+	MatrixTranslation(matrixT, 1, 0);
 	MatrixRotationDir(matrixR, rotation);
 	MatrixScale(matrixS, scale.x, scale.y);
 
@@ -64,32 +64,21 @@ void RenderRandomTriangle()
 		var.pos = var.pos * matrix;
 	}
 
-	//if (!isWaiting)
-	//{
-	//	isWaiting = true;
-	//	std::mt19937 random((unsigned int)time(0));
+	static bool isObjectGenerated = false;
+	if (isObjectGenerated == false)
+	{
+		Object* obj = new Object();
+		obj->transform = new Transform();
+		obj->vertexes = std::vector<vertex>(V, V + 6);
+		obj->Renderer = new SpriteRenderer();
+		((SpriteRenderer*)obj->Renderer)->currentSprite = ResourceManager::GetInstance().GetSprite("img.bmp");
 
-	//	std::uniform_int<> range_x(-200, 200);
-	//	std::uniform_int<> range_y(-200, 200);
-	//	for (int i = 0; i < 3; ++i)
-	//	{
-	//		V[i] = vertex(vector2(range_x(random), range_y(random)), vector3((int)i == 0, (int)i == 1, (int)i == 2) * 255);
-	//	}
-	//	std::sort(V, V + 3, [&](const vertex& a, const vertex& b) {return a.pos.y > b.pos.y; });
-	//	vector2 temp = V[1].pos - V[0].pos;
-	//	V[3] = vertex(V[2].pos + (V[0].pos - V[1].pos), vector3(1, 0, 1));
+		World::GetInstance().AddObject(obj);
+		isObjectGenerated = true;
+	}
 
-	//	std::thread([]() {
-	//		std::this_thread::sleep_for(std::chrono::milliseconds(300));
-	//		isWaiting = false;
-	//	}).detach();
-	//}
+	//World::GetInstance().GetRegistedObject(0)->transform->objectMatrix
 
 
-	static Sprite spr("img.bmp");
-	std::vector<vertex> vertexs(V, V + 6);
-	static Renderer* renderer = new SpriteRenderer();
-	((SpriteRenderer*)renderer)->currentSprite = &spr;
-
-	renderer->Render(vertexs);
+	World::GetInstance().RenderAll();
 }
